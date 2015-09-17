@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTest>
+#include <QVector>
 #include "../TextJustifier/justifytext.h"
 
 class TestTextJustifier : public QObject
@@ -15,6 +16,9 @@ private slots:
 
     void testJustify_data();
     void testJustify();
+
+    void testFindWordBreak_data();
+    void testFindWordBreak();
 };
 
 #endif // TESTTEXTJUSTIFIER_H

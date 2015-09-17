@@ -67,3 +67,57 @@ QString fillSpaces(const QString& str, int textWidth)
 
     return formattedLine;
 }
+
+int findWordBreak(const QString& str, int limit)
+{
+    QString alphabet = "[абвгдеёжзийклмнопрстуфхцчшщъыьэюя]";
+    QString vowel = "[аеёиоуыэюя]";
+    QString consonant = "[бвгджзйклмнпрстфхцчшщ]";
+    QString special = "[ьъй]";
+    QString replacementSymbols = "\1";
+
+    // Правила для расстановки мягких переносов.
+    typedef QRegularExpression RX;
+    QString replaceOn = "\\1" + replacementSymbols + "\\2";
+    QVector<QRegularExpression> rules =
+    {
+        RX("(" + special + ")" + "(" + alphabet + alphabet + ")", RX::CaseInsensitiveOption),
+        RX("(" + vowel + ")" + "(" + vowel + alphabet + ")", RX::CaseInsensitiveOption),
+        RX("(" + vowel + consonant + ")" + "(" + consonant + vowel + ")", RX::CaseInsensitiveOption),
+        RX("(" + consonant + vowel + ")" + "(" + consonant + vowel + ")", RX::CaseInsensitiveOption),
+        RX("(" + vowel + consonant + ")" + "(" + consonant + consonant + vowel + ")", RX::CaseInsensitiveOption),
+        RX("(" + vowel + consonant + consonant + ")" + "(" + consonant + consonant + vowel + ")", RX::CaseInsensitiveOption)
+    };
+
+    // Вспомогательная функция для замены символов в строке str по правилу rx, на
+    // replacement. Стандартный подход str.replace(rx, replacement) сделает не полную замену
+    // ("об-лачный" вместо "об-лач-ный").
+    auto replaceAll = [](QString& str, const QRegularExpression& rx, const QString& replacement)
+    {
+        QString temp;
+        do
+        {
+            temp = str;
+            str.replace(rx, replacement);
+        } while (temp != str);
+    };
+
+    // Расставить мягкие переносы.
+    QString copy = str;
+    for (auto rule : rules)
+    {
+        replaceAll(copy, rule, replaceOn);
+    }
+
+    // Найти максимальный индекс, не превышающий limit.
+    int breaksAmount = copy.count(replacementSymbols);
+    int result = 0;
+    do
+    {
+        int lastIndex = copy.lastIndexOf('\1');
+        copy = copy.remove(lastIndex, 1);
+        result = lastIndex - breaksAmount--;
+    } while (result > limit);
+
+    return result;
+}
