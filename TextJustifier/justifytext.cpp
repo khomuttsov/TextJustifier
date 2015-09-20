@@ -47,20 +47,18 @@ QString fillSpaces(const QString& str, int textWidth)
 
     // Добавить по одному пробелу к частям, количество которых равно remainder.
     int remainder = spaceAmountToAdd % (partsAmount - 1);
-    for (auto& part : parts)
-    {
-        if (remainder != 0)
-        {
-            part += ' ';
-            --remainder;
-        }
-    }
 
     // Пройтись по каждой части и добавить к результату эту часть плюс нужное количество пробелов.
     QString formattedLine;
     QString spaces = QString(spaceAmountToAddAfterEachPart, ' ');
     for (int i = 0; i < partsAmount - 1; ++i)
     {
+        if (remainder != 0)
+        {
+            parts[i] += ' ';
+            --remainder;
+        }
+
         formattedLine += parts[i] + spaces;
     }
     formattedLine += parts[partsAmount - 1];
