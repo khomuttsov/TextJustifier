@@ -11,15 +11,20 @@ void TestTextJustifier::testFillSpaces_data()
         << 43
         << "Этот  текст  меньше  восьмидесяти  символов";
 
-    QTest::newRow("One line, line is shorter than text width, there are not only one space after each part")
-        << "Этот  текст меньше восьмидесяти символов"
-        << 44
-        << "Этот   текст  меньше  восьмидесяти  символов";
+    //QTest::newRow("One line, line is shorter than text width, there are not only one space after each part")
+    //    << "Этот  текст меньше восьмидесяти символов"
+    //    << 44
+    //    << "Этот   текст  меньше  восьмидесяти  символов";
 
-    QTest::newRow("One line, line is shorter than text width, length of space gaps between parts will be different")
-        << "Этот текст меньше восьмидесяти символов."
-        << 43
-        << "Этот  текст  меньше  восьмидесяти символов.";
+    //QTest::newRow("One line, line is shorter than text width, length of space gaps between parts will be different")
+    //    << "Этот текст меньше восьмидесяти символов."
+    //    << 43
+    //    << "Этот  текст  меньше  восьмидесяти символов.";
+
+    //QTest::newRow("One word in line")
+    //    << "Привет"
+    //    << 8
+    //    << "Привет  ";
 }
 
 void TestTextJustifier::testFillSpaces()
@@ -126,4 +131,43 @@ void TestTextJustifier::testFindWordBreak()
     QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectation).arg(hyphenWord);
 
     QVERIFY2(hyphenWord == expectation, message.toLocal8Bit().data());
+}
+
+void TestTextJustifier::testBreakLine_data()
+{
+    typedef QPair<QString, QString> Expectations;
+
+    QTest::addColumn<QString>("str");
+    QTest::addColumn<int>("textWidth");
+    QTest::addColumn<Expectations>("expectation");
+
+    QTest::newRow("String is longer than textWidth, break is in the middle of the word")
+        << "1. Найти слово, которое находится на границе ширины, переданной пользователем"
+        << 20
+        << Expectations{"1.  Найти слово, ко-", "торое находится на границе ширины, переданной пользователем"};
+
+    QTest::newRow("There is only one word in the string")
+        << "Экскаваторы"
+        << 10
+        << Expectations{"Экскавато-", "ры"};
+
+    QTest::newRow("Punctuation mark is after textWidth")
+        << "Привет,"
+        << 6
+        << Expectations{"При-  ", "вет,"};
+}
+
+void TestTextJustifier::testBreakLine()
+{
+    typedef QPair<QString, QString> Expectations;
+
+    QFETCH(QString, str);
+    QFETCH(int, textWidth);
+    QFETCH(Expectations, expectation);
+    QString after;
+
+    breakLine(str, after, textWidth);
+    QString message = QString("\nExpected:\n\"%1\n%2\"\n\nReal:\n\"%3\n%4\"\n").arg(expectation.first).arg(expectation.second).arg(str).arg(after);
+
+    QVERIFY2(str == expectation.first && after == expectation.second, message.toLocal8Bit().data());
 }

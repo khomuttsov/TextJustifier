@@ -37,15 +37,20 @@ void fillSpaces(QString& str, int textWidth)
     }
 
     int spaceAmountToAdd = textWidth - partsLength;
-    int spaceAmountToAddAfterEachPart = spaceAmountToAdd / (partsAmount - 1);
+    int spaceAmountToAddAfterEachPart = partsAmount != 1 ?
+        spaceAmountToAdd / (partsAmount - 1) :
+        spaceAmountToAdd / partsAmount;
 
     // Добавить по одному пробелу к частям, количество которых равно remainder.
-    int remainder = spaceAmountToAdd % (partsAmount - 1);
+    int remainder = partsAmount != 1 ?
+        spaceAmountToAdd % (partsAmount - 1) :
+        spaceAmountToAdd % partsAmount;
 
     // Пройтись по каждой части и добавить к результату эту часть плюс нужное количество пробелов.
     str.clear();
     QString spaces = QString(spaceAmountToAddAfterEachPart, ' ');
-    for (int i = 0; i < partsAmount - 1; ++i)
+    int limit = partsAmount != 1 ? partsAmount - 1 : partsAmount;
+    for (int i = 0; i < limit; ++i)
     {
         if (remainder != 0)
         {
@@ -55,22 +60,58 @@ void fillSpaces(QString& str, int textWidth)
 
         str += parts[i] + spaces;
     }
-    str += parts[partsAmount - 1];
+
+    if (partsAmount != 1)
+    {
+        str += parts[partsAmount - 1];
+    }
 }
 
 void breakLine(QString& str, QString& after, int textWidth)
 {
-    // Найти максимальный индекс, не превышающий limit.
-    //int breaksAmount = copy.count(replacementSymbols);
-    //int result = 0;
-    //do
-    //{
-    //    int lastIndex = copy.lastIndexOf('\1');
-    //    copy = copy.remove(lastIndex, 1);
-    //    result = lastIndex - breaksAmount--;
-    //} while (result > limit);
+    if (str.length() <= textWidth)
+    {
+        return;
+    }
 
-    //return result;
+    // Найти слово, которое находится на границе textWidth.
+    int beginWordPosition = str.lastIndexOf(' ', textWidth - 1) + 1;
+    int endWordPosition = str.indexOf(' ', textWidth - 1) - 1;
+
+    // Если в строке одно слово.
+    if (beginWordPosition == 0)
+    {
+        beginWordPosition = 0;
+    }
+    if (endWordPosition == -2)
+    {
+        endWordPosition = str.length() - 1;
+    }
+
+    int wordLength = endWordPosition - beginWordPosition + 1;
+    QString word = str.mid(beginWordPosition, wordLength);
+
+    // Расставить в слове мягкие переносы.
+    placeHyphens(word, word);
+
+    // Вычислить максимальную длину слова до переноса, как разницу ширины текста и индекса начала слова.
+    int maxWordLengthBeforeBreak = textWidth - beginWordPosition - 1;
+
+    // Заменить последний мягкий перенос на '\2' в позиции, не превышающей максимальную длину слова до переноса. Замена производится именно на '\2', а не на знак дефиса, т. к. в строке уже может быть знак дефиса. Иначе не получится легко определить индекс, где нужно разделить строки на две.
+    int breaksCount = word.count('\1');
+    int breakIndex = word.lastIndexOf('\1', maxWordLengthBeforeBreak - 1 + breaksCount);
+    word[breakIndex] = '\2';
+    word.replace('\1', "");
+
+    // Вставить слово с переносом в строку.
+    str.remove(beginWordPosition, wordLength);
+    str.insert(beginWordPosition, word);
+
+    // Разделить строку на две.
+    QStringList strings = str.split('\2');
+    str = strings[0] + "-";
+    fillSpaces(str, textWidth);
+    after = strings[1];
 }
 
 void placeHyphens(const QString& word, QString& hyphenWord)

@@ -19,6 +19,9 @@ private slots:
 
     void testFindWordBreak_data();
     void testFindWordBreak();
+
+    void testBreakLine_data();
+    void testBreakLine();
 };
 
 #endif // TESTTEXTJUSTIFIER_H
