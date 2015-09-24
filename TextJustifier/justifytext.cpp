@@ -100,18 +100,31 @@ void breakLine(QString& str, QString& after, int textWidth)
     // Заменить последний мягкий перенос на '\2' в позиции, не превышающей максимальную длину слова до переноса. Замена производится именно на '\2', а не на знак дефиса, т. к. в строке уже может быть знак дефиса. Иначе не получится легко определить индекс, где нужно разделить строки на две.
     int breaksCount = word.count('\1');
     int breakIndex = word.lastIndexOf('\1', maxWordLengthBeforeBreak - 1 + breaksCount);
-    word[breakIndex] = '\2';
-    word.replace('\1', "");
 
-    // Вставить слово с переносом в строку.
-    str.remove(beginWordPosition, wordLength);
-    str.insert(beginWordPosition, word);
+    // В слове можно сделать перенос с учетом ограничения на длину.
+    if (breakIndex != -1)
+    {
+        word[breakIndex] = '\2';
+        word.replace('\1', "");
 
-    // Разделить строку на две.
-    QStringList strings = str.split('\2');
-    str = strings[0] + "-";
-    fillSpaces(str, textWidth);
-    after = strings[1];
+        // Вставить слово с переносом в строку.
+        str.remove(beginWordPosition, wordLength);
+        str.insert(beginWordPosition, word);
+
+        // Разделить строку на две.
+        QStringList strings = str.split('\2');
+        str = strings[0] + "-";
+        fillSpaces(str, textWidth);
+        after = strings[1];
+    }
+    // В слове нельзя сделать перенос с учетом ограничения на длину.
+    // Разделяем строку по границе начала граничного слова.
+    else
+    {
+        after = str.right(str.length() - beginWordPosition);
+        str.remove(beginWordPosition, beginWordPosition + 1000);
+        fillSpaces(str, textWidth);
+    }
 }
 
 void placeHyphens(const QString& word, QString& hyphenWord)

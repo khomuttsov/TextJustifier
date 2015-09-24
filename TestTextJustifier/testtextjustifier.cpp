@@ -11,20 +11,20 @@ void TestTextJustifier::testFillSpaces_data()
         << 43
         << "Этот  текст  меньше  восьмидесяти  символов";
 
-    //QTest::newRow("One line, line is shorter than text width, there are not only one space after each part")
-    //    << "Этот  текст меньше восьмидесяти символов"
-    //    << 44
-    //    << "Этот   текст  меньше  восьмидесяти  символов";
+    QTest::newRow("One line, line is shorter than text width, there are not only one space after each part")
+        << "Этот  текст меньше восьмидесяти символов"
+        << 44
+        << "Этот   текст  меньше  восьмидесяти  символов";
 
-    //QTest::newRow("One line, line is shorter than text width, length of space gaps between parts will be different")
-    //    << "Этот текст меньше восьмидесяти символов."
-    //    << 43
-    //    << "Этот  текст  меньше  восьмидесяти символов.";
+    QTest::newRow("One line, line is shorter than text width, length of space gaps between parts will be different")
+        << "Этот текст меньше восьмидесяти символов."
+        << 43
+        << "Этот  текст  меньше  восьмидесяти символов.";
 
-    //QTest::newRow("One word in line")
-    //    << "Привет"
-    //    << 8
-    //    << "Привет  ";
+    QTest::newRow("One word in line")
+        << "Привет"
+        << 8
+        << "Привет  ";
 }
 
 void TestTextJustifier::testFillSpaces()
@@ -49,6 +49,11 @@ void TestTextJustifier::testJustify_data()
         << QStringList{"Этот  текст меньше восьмидесяти символов.", "И этот тоже."}
         << 43
         << QStringList{"Этот  текст  меньше  восьмидесяти символов.", "И этот тоже."};
+
+    //QTest::newRow("Two lines, each line is longer than text width")
+    //    << QStringList{"Очень большая строка", "Это тоже очень большая строка"}
+    //    << 10
+    //    << QStringList{"Очень большая"};
 }
 
 void TestTextJustifier::testJustify()
@@ -155,6 +160,11 @@ void TestTextJustifier::testBreakLine_data()
         << "Привет,"
         << 6
         << Expectations{"При-  ", "вет,"};
+
+    QTest::newRow("")
+        << "Очень большая строка"
+        << 8
+        << Expectations{"Очень   ", "большая строка"};
 }
 
 void TestTextJustifier::testBreakLine()
