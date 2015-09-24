@@ -1,35 +1,29 @@
 #include "justifytext.h"
 
-QString justify(const QString& text, int textWidth)
+void justify(QStringList& text, int textWidth)
 {
-    QStringList lines = text.split(QRegularExpression("(\\r\\n|\\n|\\r)"));
-    int linesAmount = lines.size();
+    int linesAmount = text.size();
 
     for (int i = 0; i < linesAmount; ++i)
     {
-        int length = lines[i].length();
+        int length = text[i].length();
 
         if (length > textWidth)
         {
         }
-        else
+        // Удлинить только не последнюю строку.
+        else if (linesAmount == 1 || i != linesAmount - 1)
         {
-            // Удлинить только не последнюю строку.
-            if (linesAmount == 1 || i != linesAmount - 1)
-            {
-                lines[i] = fillSpaces(lines[i], textWidth);
-            }
+            fillSpaces(text[i], textWidth);
         }
     }
-
-    return linesAmount > 1 ? lines.join('\n') : lines.join("");
 }
 
-QString fillSpaces(const QString& str, int textWidth)
+void fillSpaces(QString& str, int textWidth)
 {
     if (str.length() >= textWidth)
     {
-        return str;
+        return;
     }
 
     QStringList parts = str.split(' ', QString::SkipEmptyParts);
@@ -49,7 +43,7 @@ QString fillSpaces(const QString& str, int textWidth)
     int remainder = spaceAmountToAdd % (partsAmount - 1);
 
     // Пройтись по каждой части и добавить к результату эту часть плюс нужное количество пробелов.
-    QString formattedLine;
+    str.clear();
     QString spaces = QString(spaceAmountToAddAfterEachPart, ' ');
     for (int i = 0; i < partsAmount - 1; ++i)
     {
@@ -59,14 +53,27 @@ QString fillSpaces(const QString& str, int textWidth)
             --remainder;
         }
 
-        formattedLine += parts[i] + spaces;
+        str += parts[i] + spaces;
     }
-    formattedLine += parts[partsAmount - 1];
-
-    return formattedLine;
+    str += parts[partsAmount - 1];
 }
 
-int findWordBreak(const QString& str, int limit)
+void breakLine(QString& str, QString& after, int textWidth)
+{
+    // Найти максимальный индекс, не превышающий limit.
+    //int breaksAmount = copy.count(replacementSymbols);
+    //int result = 0;
+    //do
+    //{
+    //    int lastIndex = copy.lastIndexOf('\1');
+    //    copy = copy.remove(lastIndex, 1);
+    //    result = lastIndex - breaksAmount--;
+    //} while (result > limit);
+
+    //return result;
+}
+
+void placeHyphens(const QString& word, QString& hyphenWord)
 {
     QString alphabet = "[абвгдеёжзийклмнопрстуфхцчшщъыьэюя]";
     QString vowel = "[аеёиоуыэюя]";
@@ -101,21 +108,9 @@ int findWordBreak(const QString& str, int limit)
     };
 
     // Расставить мягкие переносы.
-    QString copy = str;
+    hyphenWord = word;
     for (auto rule : rules)
     {
-        replaceAll(copy, rule, replaceOn);
+        replaceAll(hyphenWord, rule, replaceOn);
     }
-
-    // Найти максимальный индекс, не превышающий limit.
-    int breaksAmount = copy.count(replacementSymbols);
-    int result = 0;
-    do
-    {
-        int lastIndex = copy.lastIndexOf('\1');
-        copy = copy.remove(lastIndex, 1);
-        result = lastIndex - breaksAmount--;
-    } while (result > limit);
-
-    return result;
 }

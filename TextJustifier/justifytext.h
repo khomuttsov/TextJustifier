@@ -11,37 +11,44 @@
  *
  *\details Если последняя строка короче textWidth, она остается неизменной.
  *
- *\param[in] text Текст для форматирования.
+ *\param[in|out] text Текст для форматирования.
  *\param[in] textWidth Количество символов, которое должно быть в каждой строке текста.
- *\return Отформатированный текст.
  */
-QString justify(const QString& text, int textWidth);
+void justify(QStringList& text, int textWidth);
 
 /*!
  * Удлиняет строку, длина которой меньше textWidth, засчет вставки пробелов между не пробельными частями.
  *
  *\details Если длина str больше или равна textWidth, функция возвращает str.
  *
- *\param[in] str Строка для удлинения.
+ *\param[in|out] str Строка для удлинения.
  *\param[in] textWidth Количество символов, которое должно быть в удлиненной строке.
- *\return Удлиненная строка.
  */
-QString fillSpaces(const QString& str, int textWidth);
+void fillSpaces(QString& str, int textWidth);
 
 /*!
- * Найти максимальный индекс в строке, не превышающиий limit, после которого можно сделать перенос.
+ * Разбивает строку str на две: до и после переноса. Перенос становится в максимально возможном индексе, не большем textWidth.
+ *
+ *\param[in|out] str Строка для разбиения.
+ *\param[out] after Часть строки после переноса.
+ *\param[in] textWidth Количество символов, которое должно быть в каждой строке текста.
+ */
+void breakLine(QString& str, QString& after, int textWidth);
+
+/*!
+ * Расставить мягкие переносы в слове.
  *
  *\details Если в строке нельзя сделать перенос или все позици переноса больше limit, функция возвращает -1.
  *
  * Пример:
  *\code
- * int maxPos = findWordBreak("облачный", 100); // 4 (позиция буквы "ч"), "облач-ный"
+ * placeHyphens("облачный"); // "об-лач-ный"
  *\endcode
  *
  *\param[in] str Строка, где будет искаться место для переноса. Может включать в себя также знаки препинания.
  *\param[in] limit Число, больше которого не может быть найденный индекс.
  *\return Максимальный индекс в строке, после которого можно сделать перенос.
  */
-int findWordBreak(const QString& str, int limit);
+void placeHyphens(const QString& word, QString& hyphenWord);
 
 #endif // TEXTJUSTIFIER_H

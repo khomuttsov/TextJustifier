@@ -28,68 +28,102 @@ void TestTextJustifier::testFillSpaces()
     QFETCH(int, textWidth);
     QFETCH(QString, expectation);
 
-    QString result = fillSpaces(text, textWidth);
-    QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectation).arg(result);
+    fillSpaces(text, textWidth);
+    QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectation).arg(text);
 
-    QVERIFY2(result == expectation, message.toLocal8Bit().data());
+    QVERIFY2(text == expectation, message.toLocal8Bit().data());
 }
 
 void TestTextJustifier::testJustify_data()
 {
-    QTest::addColumn<QString>("text");
+    QTest::addColumn<QStringList>("text");
     QTest::addColumn<int>("textWidth");
-    QTest::addColumn<QString>("expectation");
+    QTest::addColumn<QStringList>("expectation");
 
     QTest::newRow("Two lines, each line is shorter than text width, but last line shouldn't be formatted")
-        << R"(Этот  текст меньше восьмидесяти символов.
-И  этот тоже.)"
-<< 43
-<< R"(Этот  текст  меньше  восьмидесяти символов.
-И  этот тоже.)";
+        << QStringList{"Этот  текст меньше восьмидесяти символов.", "И этот тоже."}
+        << 43
+        << QStringList{"Этот  текст  меньше  восьмидесяти символов.", "И этот тоже."};
 }
 
 void TestTextJustifier::testJustify()
 {
-    QFETCH(QString, text);
+    QFETCH(QStringList, text);
     QFETCH(int, textWidth);
-    QFETCH(QString, expectation);
+    QFETCH(QStringList, expectation);
 
-    QString result = justify(text, textWidth);
-    QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectation).arg(result);
+    justify(text, textWidth);
+    QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectation.join('\n')).arg(text.join('\n'));
 
-    QVERIFY2(result == expectation, message.toLocal8Bit().data());
+    QVERIFY2(text == expectation, message.toLocal8Bit().data());
 }
 
 void TestTextJustifier::testFindWordBreak_data()
 {
     QTest::addColumn<QString>("word");
-    QTest::addColumn<QVector<int>>("limits");
-    QTest::addColumn<QVector<int>>("expectations");
+    QTest::addColumn<QString>("expectation");
 
     QTest::newRow("Облачный")
         << "облачный"
-        << QVector<int>{6, 8, 3, 1, 0}
-        << QVector<int>{4, 4, 1, 1, -1};
+        << "об\1лач\1ный";
 
     QTest::newRow("Лапа")
         << "лапа"
-        << QVector<int>{100, 0}
-        << QVector<int>{1, -1};
+        << "ла\1па";
+
+    QTest::newRow("Круглый")
+        << "круглый"
+        << "круг\1лый";
+
+    QTest::newRow("Стрела")
+        << "стрела"
+        << "стре\1ла";
+
+    QTest::newRow("Жидкость")
+        << "жидкость"
+        << "жид\1кость";
+
+    QTest::newRow("Подъезд")
+        << "подъезд"
+        << "подъ\1езд";
+
+    QTest::newRow("Польза")
+        << "польза"
+        << "поль\1за";
+
+    QTest::newRow("Война")
+        << "война"
+        << "вой\1на";
+
+    QTest::newRow("Район")
+        << "район"
+        << "рай\1он";
+
+    QTest::newRow("Разыскать")
+        << "разыскать"
+        << "ра\1зыс\1кать";
+
+    QTest::newRow("Розыгрыш")
+        << "розыгрыш"
+        << "ро\1зыг\1рыш";
+
+    QTest::newRow("Классы")
+        << "классы"
+        << "клас\1сы";
+
+    QTest::newRow("Промышленность")
+        << "промышленность"
+        << "про\1мыш\1лен\1ность";
 }
 
 void TestTextJustifier::testFindWordBreak()
 {
     QFETCH(QString, word);
-    QFETCH(QVector<int>, limits);
-    QFETCH(QVector<int>, expectations);
+    QFETCH(QString, expectation);
+    QString hyphenWord;
 
-    int length = limits.length();
+    placeHyphens(word, hyphenWord);
+    QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectation).arg(hyphenWord);
 
-    for (int i = 0; i < length; ++i)
-    {
-        int result = findWordBreak(word, limits[i]);
-        QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectations[i]).arg(result);
-
-        QVERIFY2(result == expectations[i], message.toLocal8Bit().data());
-    }
+    QVERIFY2(hyphenWord == expectation, message.toLocal8Bit().data());
 }
