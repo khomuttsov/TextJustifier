@@ -2,9 +2,7 @@
 
 void justify(QStringList& text, int textWidth)
 {
-    int linesAmount = text.size();
-
-    for (int i = 0; i < linesAmount; ++i)
+    for (int i = 0; i < text.length(); ++i)
     {
         int length = text[i].length();
 
@@ -13,22 +11,17 @@ void justify(QStringList& text, int textWidth)
             QString after;
             breakLine(text[i], after, textWidth);
 
-            if (i != linesAmount - 1)
+            if (i != text.length() - 1)
             {
                 text[i + 1] = after + text[i + 1];
             }
             else
             {
                 text << after;
-
-                if (text.length() != linesAmount)
-                {
-                    justify(text, textWidth);
-                }
             }
         }
         // Удлинить только не последнюю строку.
-        else if (linesAmount == 1 || i != linesAmount - 1)
+        else if (text.length() == 1 || i != text.length() - 1)
         {
             fillSpaces(text[i], textWidth);
         }
