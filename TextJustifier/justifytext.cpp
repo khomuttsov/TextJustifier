@@ -10,6 +10,22 @@ void justify(QStringList& text, int textWidth)
 
         if (length > textWidth)
         {
+            QString after;
+            breakLine(text[i], after, textWidth);
+
+            if (i != linesAmount - 1)
+            {
+                text[i + 1] = after + text[i + 1];
+            }
+            else
+            {
+                text << after;
+
+                if (text.length() != linesAmount)
+                {
+                    justify(text, textWidth);
+                }
+            }
         }
         // Удлинить только не последнюю строку.
         else if (linesAmount == 1 || i != linesAmount - 1)

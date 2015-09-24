@@ -50,10 +50,10 @@ void TestTextJustifier::testJustify_data()
         << 43
         << QStringList{"Этот  текст  меньше  восьмидесяти символов.", "И этот тоже."};
 
-    //QTest::newRow("Two lines, each line is longer than text width")
-    //    << QStringList{"Очень большая строка", "Это тоже очень большая строка"}
-    //    << 10
-    //    << QStringList{"Очень большая"};
+    QTest::newRow("Two lines, each line is longer than text width")
+        << QStringList{"Очень длинная строка.", "Это тоже очень длинная строка."}
+        << 11
+        << QStringList{"Очень длин-", "ная   стро-", "ка.Это  то-", "же    очень", "длинная    ", "строка."};
 }
 
 void TestTextJustifier::testJustify()
