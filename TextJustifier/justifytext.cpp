@@ -20,8 +20,9 @@ void justify(QStringList& text, int textWidth)
                 text << after;
             }
         }
-        // Удлинить только не последнюю строку.
-        else if (text.length() == 1 || i != text.length() - 1)
+        // Удлинить только не первую и не последнюю строку.
+        else if (text.length() != 1 &&
+            (text.length() == 1 || i != text.length() - 1))
         {
             fillSpaces(text[i], textWidth);
         }
@@ -30,8 +31,14 @@ void justify(QStringList& text, int textWidth)
 
 void fillSpaces(QString& str, int textWidth)
 {
-    if (str.length() >= textWidth)
+    if (str.length() == 0 || str.length() == textWidth)
     {
+        return;
+    }
+
+    if (str.length() > textWidth)
+    {
+        throw new std::invalid_argument("Ширина строки не может быть меньше ширины текста");
         return;
     }
 
@@ -55,7 +62,8 @@ void fillSpaces(QString& str, int textWidth)
         spaceAmountToAdd % (partsAmount - 1) :
         spaceAmountToAdd % partsAmount;
 
-    // Пройтись по каждой части и добавить к результату эту часть плюс нужное количество пробелов.
+    // Пройтись по каждой части и добавить к результату эту часть плюс нужное
+    // количество пробелов.
     str.clear();
     QString spaces = QString(spaceAmountToAddAfterEachPart, ' ');
     int limit = partsAmount != 1 ? partsAmount - 1 : partsAmount;
@@ -97,18 +105,39 @@ void breakLine(QString& str, QString& after, int textWidth)
         endWordPosition = str.length() - 1;
     }
 
+    if (beginWordPosition == endWordPosition + 2)
+    {
+        endWordPosition = beginWordPosition;
+    }
+
     int wordLength = endWordPosition - beginWordPosition + 1;
     QString word = str.mid(beginWordPosition, wordLength);
 
     // Расставить в слове мягкие переносы.
     placeHyphens(word, word);
 
-    // Вычислить максимальную длину слова до переноса, как разницу ширины текста и индекса начала слова.
+    // Вычислить максимальную длину слова до переноса, как разницу ширины
+    // текста и индекса начала слова.
     int maxWordLengthBeforeBreak = textWidth - beginWordPosition - 1;
 
-    // Заменить последний мягкий перенос на '\2' в позиции, не превышающей максимальную длину слова до переноса. Замена производится именно на '\2', а не на знак дефиса, т. к. в строке уже может быть знак дефиса. Иначе не получится легко определить индекс, где нужно разделить строки на две.
+    // Заменить последний мягкий перенос на '\2' в позиции, не превышающей
+    // максимальную длину слова до переноса. Замена производится именно на
+    // '\2', а не на знак дефиса, т. к. в строке уже может быть знак дефиса.
+    // Иначе не получится легко определить индекс, где нужно разделить строки
+    // на две.
     int breaksCount = word.count('\1');
     int breakIndex = word.lastIndexOf('\1', maxWordLengthBeforeBreak - 1 + breaksCount);
+
+    // Слово находится на границе ширины текста.
+    if (breaksCount == 0 && breakIndex == -1)
+    {
+        if (beginWordPosition + wordLength <= textWidth)
+        {
+            after = str.right(str.length() - textWidth).trimmed();
+            str.chop(str.length() - textWidth);
+            return;
+        }
+    }
 
     // В слове можно сделать перенос с учетом ограничения на длину.
     if (breakIndex != -1)
@@ -123,7 +152,10 @@ void breakLine(QString& str, QString& after, int textWidth)
         // Разделить строку на две.
         QStringList strings = str.split('\2');
         str = strings[0] + "-";
-        fillSpaces(str, textWidth);
+        if (str.length() < textWidth)
+        {
+            fillSpaces(str, textWidth);
+        }
         after = strings[1];
     }
     // В слове нельзя сделать перенос с учетом ограничения на длину.
@@ -131,8 +163,11 @@ void breakLine(QString& str, QString& after, int textWidth)
     else
     {
         after = str.right(str.length() - beginWordPosition);
-        str.remove(beginWordPosition, beginWordPosition + 1000);
-        fillSpaces(str, textWidth);
+        str.chop(str.length() - beginWordPosition);
+        if (str.length() < textWidth)
+        {
+            fillSpaces(str, textWidth);
+        }
     }
 }
 
@@ -157,9 +192,9 @@ void placeHyphens(const QString& word, QString& hyphenWord)
         RX("(" + vowel + consonant + consonant + ")" + "(" + consonant + consonant + vowel + ")", RX::CaseInsensitiveOption)
     };
 
-    // Вспомогательная функция для замены символов в строке str по правилу rx, на
-    // replacement. Стандартный подход str.replace(rx, replacement) сделает не полную замену
-    // ("об-лачный" вместо "об-лач-ный").
+    // Вспомогательная функция для замены символов в строке str по правилу rx,
+    // на replacement. Стандартный подход str.replace(rx, replacement) сделает
+    // не полную замену ("об-лачный" вместо "об-лач-ный").
     auto replaceAll = [](QString& str, const QRegularExpression& rx, const QString& replacement)
     {
         QString temp;

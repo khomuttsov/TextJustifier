@@ -23,8 +23,9 @@ void justify(QStringList& text, int textWidth);
  *
  *\param[in|out] str Строка для удлинения.
  *\param[in] textWidth Количество символов, которое должно быть в удлиненной строке.
+ *\throws Длина строки больше ширины текста.
  */
-void fillSpaces(QString& str, int textWidth);
+void fillSpaces(QString& str, int textWidth) throw (std::invalid_argument);
 
 /*!
  * Разбивает строку str на две: до и после переноса. Перенос становится в максимально возможном индексе, не большем textWidth.

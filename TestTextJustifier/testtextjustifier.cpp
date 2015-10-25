@@ -22,9 +22,24 @@ void TestTextJustifier::testFillSpaces_data()
         << "Этот  текст  меньше  восьмидесяти символов.";
 
     QTest::newRow("One word in line")
-        << "Привет"
-        << 8
-        << "Привет  ";
+        << "Слово"
+        << 10
+        << "Слово     ";
+
+    QTest::newRow("Empty string")
+        << ""
+        << 1
+        << "";
+
+    QTest::newRow("String length is less than user text width")
+        << "Какая-то строка"
+        << 20
+        << "Какая-то      строка";
+
+    QTest::newRow("There are odd number of words")
+        << "Раз, два, три"
+        << 14
+        << "Раз,  два, три";
 }
 
 void TestTextJustifier::testFillSpaces()
@@ -54,6 +69,36 @@ void TestTextJustifier::testJustify_data()
         << QStringList{"Очень длинная строка.", "Это тоже очень длинная строка."}
         << 11
         << QStringList{"Очень длин-", "ная   стро-", "ка.Это  то-", "же    очень", "длинная    ", "строка."};
+
+    QTest::newRow("Empty text")
+        << QStringList{""}
+        << 11
+        << QStringList{""};
+
+    QTest::newRow("One line")
+        << QStringList{"Какая-то строка"}
+        << 80
+        << QStringList{"Какая-то строка"};
+
+    QTest::newRow("Multi line")
+        << QStringList{"Какая-то строка", "Еще какая-то строка"}
+        << 20
+        << QStringList{"Какая-то      строка", "Еще какая-то строка"};
+
+    QTest::newRow("Very long multi line")
+        << QStringList{"Очень длинная строка", "Еще одна длинная строка"}
+        << 20
+        << QStringList{"Очень длинная строка", "Еще   одна   длинная", "строка"};
+
+    QTest::newRow("Mixed multi line text")
+        << QStringList{"Короткая строка", "Еще одна длинная строка"}
+        << 20
+        << QStringList{"Короткая      строка", "Еще   одна   длинная", "строка"};
+
+    QTest::newRow("Formatting with breaking")
+        << QStringList{"Раз, два, три, четыре, пять."}
+        << 20
+        << QStringList{"Раз, два, три, четы-", "ре, пять."};
 }
 
 void TestTextJustifier::testJustify()
@@ -161,10 +206,60 @@ void TestTextJustifier::testBreakLine_data()
         << 6
         << Expectations{"При-  ", "вет,"};
 
-    QTest::newRow("")
+    QTest::newRow("String length is more than text width")
         << "Очень большая строка"
         << 8
         << Expectations{"Очень   ", "большая строка"};
+
+    QTest::newRow("Empty string")
+        << ""
+        << 0
+        << Expectations{"", ""};
+
+    QTest::newRow("String length is less than text width")
+        << "Короткая строка"
+        << 80
+        << Expectations{"Короткая строка", ""};
+
+    QTest::newRow("String length is more than text width")
+        << "Длинная строка"
+        << 10
+        << Expectations{"Длинная   ", "строка"};
+
+    QTest::newRow("There are even number of words")
+        << "Два слова"
+        << 8
+        << Expectations{"Два сло-", "ва"};
+
+    QTest::newRow("Break is on the middle of the word")
+        << "Длинная строка"
+        << 13
+        << Expectations{"Длинная стро-", "ка"};
+
+    QTest::newRow("It's no possible to break line in the word")
+        << "Длинная строка"
+        << 10
+        << Expectations{"Длинная   ", "строка"};
+
+    QTest::newRow("Punctuation mark is not fit to text width, but word, which it follows, does")
+        << "Длинная, длинная строка"
+        << 7
+        << Expectations{"Длин-  ", "ная, длинная строка"};
+
+    QTest::newRow("Word length is longer than text width")
+        << "Прибавка"
+        << 6
+        << Expectations{"При-  ", "бавка"};
+
+    QTest::newRow("Word is on the edge of the text width")
+        << "Прибавка к пенсии"
+        << 10
+        << Expectations{"Прибавка к", "пенсии"};
+
+    QTest::newRow("Word is on the edge of the text width")
+        << "Прибавка к пенсии"
+        << 9
+        << Expectations{"Прибавка ", "к пенсии"};
 }
 
 void TestTextJustifier::testBreakLine()
