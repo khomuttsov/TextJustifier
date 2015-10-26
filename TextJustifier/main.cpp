@@ -9,12 +9,14 @@ int main(int argc, char *argv[])
     if (argc != 3)
     {
         std::cerr << "Invalid arguments number" << std::endl;
+        return -1;
     }
 
     QFile inputFile(argv[1]);
     if (!inputFile.open(QIODevice::ReadOnly))
     {
         std::cerr << "Couldn't open file: " << argv[1] << std::endl;
+        return -1;
     }
 
     QTextStream in(&inputFile);
@@ -27,6 +29,7 @@ int main(int argc, char *argv[])
     if (!outputFile.open(QIODevice::WriteOnly))
     {
         std::cerr << "Couldn't write to file: " << "result.txt" << std::endl;
+        return -1;
     }
 
     QTextStream out(&outputFile);
