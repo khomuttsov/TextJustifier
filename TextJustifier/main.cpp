@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     }
 
     QTextStream in(&inputFile);
+    in.setCodec("UTF-8");
     QStringList text = in.readAll().split("\r\n");
 
     int textWidth = atoi(argv[2]);
