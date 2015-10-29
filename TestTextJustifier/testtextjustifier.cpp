@@ -256,10 +256,80 @@ void TestTextJustifier::testBreakLine_data()
         << 10
         << Expectations{"Прибавка к", "пенсии"};
 
-    QTest::newRow("Word is on the edge of the text width")
+    QTest::newRow("Word is on the edge of the text width 2")
         << "Прибавка к пенсии"
         << 9
         << Expectations{"Прибавка ", "к пенсии"};
+
+    QTest::newRow("Final test 1")
+        << "Полное восстановление"
+        << 7
+        << Expectations{"Полное ", "восстановление"};
+
+    QTest::newRow("Final test 2")
+        << "Полное восстановление"
+        << 9
+        << Expectations{"Полное   ", "восстановление"};
+
+    QTest::newRow("Final test 3")
+        << "Полное восстановление"
+        << 10
+        << Expectations{"Полное    ", "восстановление"};
+
+    QTest::newRow("Final test 4")
+        << "Полное восстановление"
+        << 11
+        << Expectations{"Полное вос-", "становление"};
+
+    QTest::newRow("Final test 5")
+        << "Полное восстановление"
+        << 12
+        << Expectations{"Полное  вос-", "становление"};
+
+    QTest::newRow("Final test 6")
+        << "Полное восстановление"
+        << 13
+        << Expectations{"Полное   вос-", "становление"};
+
+    QTest::newRow("Final test 7")
+        << "Полное восстановление"
+        << 14
+        << Expectations{"Полное восста-", "новление"};
+
+    QTest::newRow("Final test 8")
+        << "Полное восстановление"
+        << 15
+        << Expectations{"Полное  восста-", "новление"};
+
+    QTest::newRow("Final test 9")
+        << "Полное восстановление"
+        << 16
+        << Expectations{"Полное   восста-", "новление"};
+
+    QTest::newRow("Final test 10")
+        << "Полное восстановление"
+        << 17
+        << Expectations{"Полное восстанов-", "ление"};
+
+    QTest::newRow("Final test 11")
+        << "Полное восстановление"
+        << 18
+        << Expectations{"Полное  восстанов-", "ление"};
+
+    QTest::newRow("Final test 12")
+        << "Полное восстановление"
+        << 19
+        << Expectations{"Полное восстановле-", "ние"};
+
+    QTest::newRow("Final test 13")
+        << "Полное восстановление"
+        << 20
+        << Expectations{"Полное  восстановле-", "ние"};
+
+    QTest::newRow("Final test 14")
+        << "Полное восстановление"
+        << 21
+        << Expectations{"Полное восстановление", ""};
 }
 
 void TestTextJustifier::testBreakLine()

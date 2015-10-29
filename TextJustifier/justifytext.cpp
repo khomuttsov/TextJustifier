@@ -95,16 +95,13 @@ void breakLine(QString& str, QString& after, int textWidth)
     int beginWordPosition = str.lastIndexOf(' ', textWidth - 1) + 1;
     int endWordPosition = str.indexOf(' ', textWidth - 1) - 1;
 
-    // Если в строке одно слово.
-    if (beginWordPosition == 0)
-    {
-        beginWordPosition = 0;
-    }
+    // Граничное слово находится в конце строки.
     if (endWordPosition == -2)
     {
         endWordPosition = str.length() - 1;
     }
 
+    // Слово состоит из одной буквы.
     if (beginWordPosition == endWordPosition + 2)
     {
         endWordPosition = beginWordPosition;
@@ -116,33 +113,59 @@ void breakLine(QString& str, QString& after, int textWidth)
     // Расставить в слове мягкие переносы.
     placeHyphens(word, word);
 
-    // Вычислить максимальную длину слова до переноса, как разницу ширины
-    // текста и индекса начала слова.
-    int maxWordLengthBeforeBreak = textWidth - beginWordPosition - 1;
-
-    // Заменить последний мягкий перенос на '\2' в позиции, не превышающей
-    // максимальную длину слова до переноса. Замена производится именно на
-    // '\2', а не на знак дефиса, т. к. в строке уже может быть знак дефиса.
-    // Иначе не получится легко определить индекс, где нужно разделить строки
-    // на две.
-    int breaksCount = word.count('\1');
-    int breakIndex = word.lastIndexOf('\1', maxWordLengthBeforeBreak - 1 + breaksCount);
-
-    // Слово находится на границе ширины текста.
-    if (breaksCount == 0 && breakIndex == -1)
+    // В слове нельзя сделать перенос.
+    if (word.count('\1') == 0)
     {
+        // Слово целиком умещается в ширину текста.
         if (beginWordPosition + wordLength <= textWidth)
         {
             after = str.right(str.length() - textWidth).trimmed();
             str.chop(str.length() - textWidth);
             return;
         }
+        else
+        {
+            QString temp = str.left(textWidth);
+            after = str.right(str.length() - temp.length());
+            str = temp;
+            return;
+        }
     }
+
+    // Вычислить максимальную длину слова до переноса, как разницу индексов
+    // максимально допустимого символа, умещающегося в ширину текста, и начала
+    // слова (символ переноса не входит в эту длину).
+    int maxWordLengthBeforeBreak = (textWidth - 1) - beginWordPosition;
+
+    // Так как в слове появились мягкие переносы, то нужно увеличить
+    // максимальную длину слова до переноса на количество символов,
+    // встретившихся перед прежней длиной.
+    for (int i = 0; i < maxWordLengthBeforeBreak; ++i)
+    {
+        if (word[i] == '\1')
+        {
+            ++maxWordLengthBeforeBreak;
+        }
+    }
+    if (word[maxWordLengthBeforeBreak] == '\1')
+    {
+        ++maxWordLengthBeforeBreak;
+    }
+
+    // Индекс переноса.
+    int breakIndex = word.lastIndexOf('\1', maxWordLengthBeforeBreak - 1);
 
     // В слове можно сделать перенос с учетом ограничения на длину.
     if (breakIndex != -1)
     {
+        // Заменить мягкий перенос на '\2' в позиции, не превышающей
+        // максимальную длину слова до переноса. Замена производится именно на
+        // '\2', а не на знак дефиса, т. к. в строке уже может быть знак дефиса.
+        // Иначе не получится легко определить индекс, где нужно разделить
+        // строки на две.
         word[breakIndex] = '\2';
+
+        // Удалить все мягкие переносы.
         word.replace('\1', "");
 
         // Вставить слово с переносом в строку.
