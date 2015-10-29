@@ -6,11 +6,14 @@ void justify(QStringList& text, int textWidth)
     {
         int length = text[i].length();
 
+        // Разбить строку.
         if (length > textWidth)
         {
             QString after;
             breakLine(text[i], after, textWidth);
 
+            // Если строка не последняя, вставить часть после переноса в
+            // начало следующей строки.
             if (i != text.length() - 1)
             {
                 text[i + 1] = after + text[i + 1];
@@ -39,7 +42,6 @@ void fillSpaces(QString& str, int textWidth)
     if (str.length() > textWidth)
     {
         throw new std::invalid_argument("Ширина строки не может быть меньше ширины текста");
-        return;
     }
 
     QStringList parts = str.split(' ', QString::SkipEmptyParts);
