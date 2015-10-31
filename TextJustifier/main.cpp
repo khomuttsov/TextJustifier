@@ -26,7 +26,12 @@ int main(int argc, char *argv[])
     int textWidth = atoi(argv[2]);
     justify(text, textWidth);
 
-    QFile outputFile("result.txt");
+    int dotsAmount = QString(argv[1]).count('.');
+    QString contentBetweenTwoLastPoints =
+        QString(argv[1]).split('.')[dotsAmount == 0 ? 0 : dotsAmount - 1];
+    QString fileName =
+        contentBetweenTwoLastPoints.section(QRegularExpression("[\\\\/]"), -1);
+    QFile outputFile(fileName + "_form.txt");
     if (!outputFile.open(QIODevice::WriteOnly))
     {
         std::cerr << "Couldn't write to file: " << "result.txt" << std::endl;
