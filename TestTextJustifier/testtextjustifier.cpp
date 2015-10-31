@@ -330,6 +330,11 @@ void TestTextJustifier::testBreakLine_data()
         << "Полное восстановление"
         << 21
         << Expectations{"Полное восстановление", ""};
+
+    QTest::newRow("Some additional test")
+        << "Не следует, однако забывать, что консультация"
+        << 20
+        << Expectations{"Не  следует,  однако", "забывать, что консультация"};
 }
 
 void TestTextJustifier::testBreakLine()

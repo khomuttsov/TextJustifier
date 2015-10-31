@@ -112,6 +112,20 @@ void breakLine(QString& str, QString& after, int textWidth)
     int wordLength = endWordPosition - beginWordPosition + 1;
     QString word = str.mid(beginWordPosition, wordLength);
 
+    // Слово начинается на границе ширины текста.
+    if (beginWordPosition == textWidth - 1 && wordLength != 1)
+    {
+        QString temp = str.left(textWidth - 1);
+        after = str.right(str.length() - temp.length());
+
+        if (temp.length() < textWidth)
+        {
+            fillSpaces(temp, textWidth);
+        }
+        str = temp;
+        return;
+    }
+
     // Расставить в слове мягкие переносы.
     placeHyphens(word, word);
 
