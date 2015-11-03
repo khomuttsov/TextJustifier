@@ -16,7 +16,7 @@ void justify(QStringList& text, int textWidth)
             // начало следующей строки.
             if (i != text.length() - 1)
             {
-                text[i + 1] = after + text[i + 1];
+                text[i + 1] = after + ' ' + text[i + 1];
             }
             else
             {

@@ -68,7 +68,7 @@ void TestTextJustifier::testJustify_data()
     QTest::newRow("Two lines, each line is longer than text width")
         << QStringList{"Очень длинная строка.", "Это тоже очень длинная строка."}
         << 11
-        << QStringList{"Очень длин-", "ная   стро-", "ка.Это  то-", "же    очень", "длинная    ", "строка."};
+        << QStringList{"Очень длин-", "ная   стро-", "ка. Это то-", "же    очень", "длинная    ", "строка."};
 
     QTest::newRow("Empty text")
         << QStringList{""}
@@ -99,6 +99,11 @@ void TestTextJustifier::testJustify_data()
         << QStringList{"Раз, два, три, четыре, пять."}
         << 20
         << QStringList{"Раз, два, три, четы-", "ре, пять."};
+
+    QTest::newRow("Formatting with breaking")
+        << QStringList{"Привет пока", "пока"}
+        << 10
+        << QStringList{"Привет по-", "ка пока"};
 }
 
 void TestTextJustifier::testJustify()
