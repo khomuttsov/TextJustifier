@@ -108,9 +108,21 @@ void TestTextJustifier::testJustify()
     QFETCH(QStringList, expectation);
 
     justify(text, textWidth);
-    QString message = QString("\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n").arg(expectation.join('\n')).arg(text.join('\n'));
+    QString message = QString("\nСтрока: %1\nОжидалось:\n\"%2\"\n\nReal:\n\"%3\"\n");
 
-    QVERIFY2(text == expectation, message.toLocal8Bit().data());
+    int resultLength = text.length();
+    int expectationLength = expectation.length();
+    int length = std::max(resultLength, expectationLength);
+    for (int i = 0; i < length; ++i)
+    {
+        QVERIFY2(text[i] == expectation[i],
+            message
+            .arg(i + 1)
+            .arg(i <= expectationLength ? expectation[i] : "")
+            .arg(i <= resultLength ? text[i] : "")
+            .toLocal8Bit().data()
+            );
+    }
 }
 
 void TestTextJustifier::testFindWordBreak_data()
@@ -347,7 +359,13 @@ void TestTextJustifier::testBreakLine()
     QString after;
 
     breakLine(str, after, textWidth);
-    QString message = QString("\nExpected:\n\"%1\n%2\"\n\nReal:\n\"%3\n%4\"\n").arg(expectation.first).arg(expectation.second).arg(str).arg(after);
+    QString message1 = QString("\nПервая пара\nExpected:\n\"%1\n%2\"\n\nReal:\n\"%3\n%4\"\n")
+        .arg(expectation.first)
+        .arg(str);
+    QString message2 = QString("\nВторая пара\nExpected:\n\"%1\n%2\"\n\nReal:\n\"%3\n%4\"\n")
+        .arg(expectation.second)
+        .arg(after);
 
-    QVERIFY2(str == expectation.first && after == expectation.second, message.toLocal8Bit().data());
+    QVERIFY2(str == expectation.first, message1.toLocal8Bit().data());
+    QVERIFY2(after == expectation.second, message2.toLocal8Bit().data());
 }
