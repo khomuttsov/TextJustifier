@@ -17,8 +17,8 @@ private slots:
     void testJustify_data();
     void testJustify();
 
-    void testFindWordBreak_data();
-    void testFindWordBreak();
+    void testPlaceHyphens_data();
+    void testPlaceHyphens();
 
     void testBreakLine_data();
     void testBreakLine();

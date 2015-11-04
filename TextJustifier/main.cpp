@@ -2,10 +2,18 @@
 #include <QFile>
 #include <QTextStream>
 #include <QRegularExpression>
+#include <clocale>
+#include "testtextjustifier.h"
 #include "justifytext.h"
 
 int main(int argc, char *argv[])
 {
+	if (argc >= 2 && QString(argv[1]) == "-t")
+	{
+		    setlocale(LC_ALL, "Russian");
+			return QTest::qExec(&TestTextJustifier());
+	}
+
     if (argc != 3)
     {
         std::cerr << "Invalid arguments number" << std::endl;

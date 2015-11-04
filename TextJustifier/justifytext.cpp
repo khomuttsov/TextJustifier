@@ -49,9 +49,11 @@ void fillSpaces(QString& str, int textWidth)
 
     // Получить длину непробельных символов.
     int partsLength = 0;
-    for (auto part : parts)
+
+	QList<QString>::iterator i = parts.begin();
+    for (; i != parts.end(); ++i)
     {
-        partsLength += part.length();
+        partsLength += i->length();
     }
 
     int spaceAmountToAdd = textWidth - partsLength;
@@ -221,15 +223,15 @@ void placeHyphens(const QString& word, QString& hyphenWord)
     // Правила для расстановки мягких переносов.
     typedef QRegularExpression RX;
     QString replaceOn = "\\1" + replacementSymbols + "\\2";
-    QVector<QRegularExpression> rules =
-    {
-        RX("(" + special + ")" + "(" + alphabet + alphabet + ")", RX::CaseInsensitiveOption),
-        RX("(" + vowel + ")" + "(" + vowel + alphabet + ")", RX::CaseInsensitiveOption),
-        RX("(" + vowel + consonant + ")" + "(" + consonant + vowel + ")", RX::CaseInsensitiveOption),
-        RX("(" + consonant + vowel + ")" + "(" + consonant + vowel + ")", RX::CaseInsensitiveOption),
-        RX("(" + vowel + consonant + ")" + "(" + consonant + consonant + vowel + ")", RX::CaseInsensitiveOption),
-        RX("(" + vowel + consonant + consonant + ")" + "(" + consonant + consonant + vowel + ")", RX::CaseInsensitiveOption)
-    };
+    QVector<QRegularExpression> rules;
+    
+    rules.push_back(RX("(" + special + ")" + "(" + alphabet + alphabet + ")", RX::CaseInsensitiveOption));
+    rules.push_back(RX("(" + vowel + ")" + "(" + vowel + alphabet + ")", RX::CaseInsensitiveOption));
+    rules.push_back(RX("(" + vowel + consonant + ")" + "(" + consonant + vowel + ")", RX::CaseInsensitiveOption));
+    rules.push_back(RX("(" + consonant + vowel + ")" + "(" + consonant + vowel + ")", RX::CaseInsensitiveOption));
+    rules.push_back(RX("(" + vowel + consonant + ")" + "(" + consonant + consonant + vowel + ")", RX::CaseInsensitiveOption));
+    rules.push_back(RX("(" + vowel + consonant + consonant + ")" + "(" + consonant + consonant + vowel + ")", RX::CaseInsensitiveOption));
+    
 
     // Вспомогательная функция для замены символов в строке str по правилу rx,
     // на replacement. Стандартный подход str.replace(rx, replacement) сделает
@@ -246,8 +248,9 @@ void placeHyphens(const QString& word, QString& hyphenWord)
 
     // Расставить мягкие переносы.
     hyphenWord = word;
-    for (auto rule : rules)
+	QVector<QRegularExpression>::Iterator i = rules.begin();
+    for (; i != rules.end(); ++i)
     {
-        replaceAll(hyphenWord, rule, replaceOn);
+        replaceAll(hyphenWord, *i, replaceOn);
     }
 }

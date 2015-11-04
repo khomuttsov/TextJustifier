@@ -60,50 +60,105 @@ void TestTextJustifier::testJustify_data()
     QTest::addColumn<int>("textWidth");
     QTest::addColumn<QStringList>("expectation");
 
+	QStringList l1;
+	l1.push_back("Этот  текст меньше восьмидесяти символов.");
+	l1.push_back("И этот тоже.");
+	QStringList l1Expect;
+	l1Expect.push_back("Этот  текст  меньше  восьмидесяти символов.");
+	l1Expect.push_back("И этот тоже.");
     QTest::newRow("Two lines, each line is shorter than text width, but last line shouldn't be formatted")
-        << QStringList{"Этот  текст меньше восьмидесяти символов.", "И этот тоже."}
+        << l1
         << 43
-        << QStringList{"Этот  текст  меньше  восьмидесяти символов.", "И этот тоже."};
+        << l1Expect;
 
+	QStringList l2;
+	l2.push_back("Очень длинная строка.");
+	l2.push_back("Это тоже очень длинная строка.");
+	QStringList l2Expect;
+	l2Expect.push_back("Очень длин-");
+	l2Expect.push_back("ная   стро-");
+	l2Expect.push_back("ка. Это то-");
+	l2Expect.push_back("же    очень");
+	l2Expect.push_back("длинная    ");
+	l2Expect.push_back("строка.");
     QTest::newRow("Two lines, each line is longer than text width")
-        << QStringList{"Очень длинная строка.", "Это тоже очень длинная строка."}
+        << l2
         << 11
-        << QStringList{"Очень длин-", "ная   стро-", "ка. Это то-", "же    очень", "длинная    ", "строка."};
+        << l2Expect;
 
+	QStringList l3;
+	l3.push_back("");
+	QStringList l3Expect;
+	l3Expect.push_back("");
     QTest::newRow("Empty text")
-        << QStringList{""}
+        << l3
         << 11
-        << QStringList{""};
+        << l3Expect;
 
+	QStringList l4;
+	l4.push_back("Какая-то строка");
+	QStringList l4Expect;
+	l4Expect.push_back("Какая-то строка");
     QTest::newRow("One line")
-        << QStringList{"Какая-то строка"}
+        << l4
         << 80
-        << QStringList{"Какая-то строка"};
+        << l4Expect;
 
+	QStringList l5;
+	l5.push_back("Какая-то строка");
+	l5.push_back("Еще какая-то строка");
+	QStringList l5Expect;
+	l5Expect.push_back("Какая-то      строка");
+	l5Expect.push_back("Еще какая-то строка");
     QTest::newRow("Multi line")
-        << QStringList{"Какая-то строка", "Еще какая-то строка"}
+        << l5
         << 20
-        << QStringList{"Какая-то      строка", "Еще какая-то строка"};
+        << l5Expect;
 
+	QStringList l6;
+	l6.push_back("Очень длинная строка");
+	l6.push_back("Еще одна длинная строка");
+	QStringList l6Expect;
+	l6Expect.push_back("Очень длинная строка");
+	l6Expect.push_back("Еще   одна   длинная");
+	l6Expect.push_back("строка");
     QTest::newRow("Very long multi line")
-        << QStringList{"Очень длинная строка", "Еще одна длинная строка"}
+        << l6
         << 20
-        << QStringList{"Очень длинная строка", "Еще   одна   длинная", "строка"};
+        << l6Expect;
 
+	QStringList l7;
+	l7.push_back("Короткая строка");
+	l7.push_back("Еще одна длинная строка");
+	QStringList l7Expect;
+	l7Expect.push_back("Короткая      строка");
+	l7Expect.push_back("Еще   одна   длинная");
+	l7Expect.push_back("строка");
     QTest::newRow("Mixed multi line text")
-        << QStringList{"Короткая строка", "Еще одна длинная строка"}
+        << l7
         << 20
-        << QStringList{"Короткая      строка", "Еще   одна   длинная", "строка"};
+        << l7Expect;
 
+	QStringList l8;
+	l8.push_back("Раз, два, три, четыре, пять.");
+	QStringList l8Expect;
+	l8Expect.push_back("Раз, два, три, четы-");
+	l8Expect.push_back("ре, пять.");
     QTest::newRow("Formatting with breaking")
-        << QStringList{"Раз, два, три, четыре, пять."}
+        << l8
         << 20
-        << QStringList{"Раз, два, три, четы-", "ре, пять."};
+        << l8Expect;
 
+	QStringList l9;
+	l9.push_back("Привет пока");
+	l9.push_back("пока");
+	QStringList l9Expect;
+	l9Expect.push_back("Привет по-");
+	l9Expect.push_back("ка пока");
     QTest::newRow("Formatting with breaking")
-        << QStringList{"Привет пока", "пока"}
+        << l9
         << 10
-        << QStringList{"Привет по-", "ка пока"};
+        << l9Expect;
 }
 
 void TestTextJustifier::testJustify()
@@ -130,7 +185,7 @@ void TestTextJustifier::testJustify()
     }
 }
 
-void TestTextJustifier::testFindWordBreak_data()
+void TestTextJustifier::testPlaceHyphens_data()
 {
     QTest::addColumn<QString>("word");
     QTest::addColumn<QString>("expectation");
@@ -188,7 +243,7 @@ void TestTextJustifier::testFindWordBreak_data()
         << "про\1мыш\1лен\1ность";
 }
 
-void TestTextJustifier::testFindWordBreak()
+void TestTextJustifier::testPlaceHyphens()
 {
     QFETCH(QString, word);
     QFETCH(QString, expectation);
@@ -208,150 +263,237 @@ void TestTextJustifier::testBreakLine_data()
     QTest::addColumn<int>("textWidth");
     QTest::addColumn<Expectations>("expectation");
 
+	Expectations t1;
+	t1.first = "1.  Найти слово, ко-";
+	t1.second = "торое находится на границе ширины, переданной пользователем";
     QTest::newRow("String is longer than textWidth, break is in the middle of the word")
         << "1. Найти слово, которое находится на границе ширины, переданной пользователем"
         << 20
-        << Expectations{"1.  Найти слово, ко-", "торое находится на границе ширины, переданной пользователем"};
+        << t1;
 
+	Expectations t2;
+	t2.first = "Экскавато-";
+	t2.second = "ры";
     QTest::newRow("There is only one word in the string")
         << "Экскаваторы"
         << 10
-        << Expectations{"Экскавато-", "ры"};
+        << t2;
 
+	Expectations t3;
+	t3.first = "При-  ";
+	t3.second = "вет,";
     QTest::newRow("Punctuation mark is after textWidth")
         << "Привет,"
         << 6
-        << Expectations{"При-  ", "вет,"};
+        << t3;
 
+	Expectations t4;
+	t4.first = "Очень   ";
+	t4.second = "большая строка";
     QTest::newRow("String length is more than text width")
         << "Очень большая строка"
         << 8
-        << Expectations{"Очень   ", "большая строка"};
+        << t4;
 
+	Expectations t5;
+	t5.first = "";
+	t5.second = "";
     QTest::newRow("Empty string")
         << ""
         << 0
-        << Expectations{"", ""};
+        << t5;
 
+	Expectations t6;
+	t6.first = "Короткая строка";
+	t6.second = "";
     QTest::newRow("String length is less than text width")
         << "Короткая строка"
         << 80
-        << Expectations{"Короткая строка", ""};
+        << t6;
 
+	Expectations t7;
+	t7.first = "Длинная   ";
+	t7.second = "строка";
     QTest::newRow("String length is more than text width")
         << "Длинная строка"
         << 10
-        << Expectations{"Длинная   ", "строка"};
+        << t7;
 
+	Expectations t8;
+	t8.first = "Два сло-";
+	t8.second = "ва";
     QTest::newRow("There are even number of words")
         << "Два слова"
         << 8
-        << Expectations{"Два сло-", "ва"};
+        << t8;
 
+	Expectations t9;
+	t9.first = "Длинная стро-";
+	t9.second = "ка";
     QTest::newRow("Break is on the middle of the word")
         << "Длинная строка"
         << 13
-        << Expectations{"Длинная стро-", "ка"};
+        << t9;
 
+	Expectations t10;
+	t10.first = "Длинная   ";
+	t10.second = "строка";
     QTest::newRow("It's no possible to break line in the word")
         << "Длинная строка"
         << 10
-        << Expectations{"Длинная   ", "строка"};
+        << t10;
 
+	Expectations t11;
+	t11.first = "Длин-  ";
+	t11.second = "ная, длинная строка";
     QTest::newRow("Punctuation mark is not fit to text width, but word, which it follows, does")
         << "Длинная, длинная строка"
         << 7
-        << Expectations{"Длин-  ", "ная, длинная строка"};
+        << t11;
 
+	Expectations t12;
+	t12.first = "При-  ";
+	t12.second = "бавка";
     QTest::newRow("Word length is longer than text width")
         << "Прибавка"
         << 6
-        << Expectations{"При-  ", "бавка"};
+        << t12;
 
+	Expectations t13;
+	t13.first = "Прибавка к";
+	t13.second = "пенсии";
     QTest::newRow("Word is on the edge of the text width")
         << "Прибавка к пенсии"
         << 10
-        << Expectations{"Прибавка к", "пенсии"};
+        << t13;
 
+	Expectations t14;
+	t14.first = "Прибавка ";
+	t14.second = "к пенсии";
     QTest::newRow("Word is on the edge of the text width 2")
         << "Прибавка к пенсии"
         << 9
-        << Expectations{"Прибавка ", "к пенсии"};
+        << t14;
 
+	Expectations t15;
+	t15.first = "Полное ";
+	t15.second = "восстановление";
     QTest::newRow("Final test 1")
         << "Полное восстановление"
         << 7
-        << Expectations{"Полное ", "восстановление"};
+        << t15;
 
+	Expectations t16;
+	t16.first = "Полное   ";
+	t16.second = "восстановление";
     QTest::newRow("Final test 2")
         << "Полное восстановление"
         << 9
-        << Expectations{"Полное   ", "восстановление"};
+        << t16;
 
+	Expectations t17;
+	t17.first = "Полное    ";
+	t17.second = "восстановление";
     QTest::newRow("Final test 3")
         << "Полное восстановление"
         << 10
-        << Expectations{"Полное    ", "восстановление"};
+        << t17;
 
+	Expectations t18;
+	t18.first = "Полное вос-";
+	t18.second = "становление";
     QTest::newRow("Final test 4")
         << "Полное восстановление"
         << 11
-        << Expectations{"Полное вос-", "становление"};
+        << t18;
 
+	Expectations t19;
+	t19.first = "Полное  вос-";
+	t19.second = "становление";
     QTest::newRow("Final test 5")
         << "Полное восстановление"
         << 12
-        << Expectations{"Полное  вос-", "становление"};
+        << t19;
 
+	Expectations t20;
+	t20.first = "Полное   вос-";
+	t20.second = "становление";
     QTest::newRow("Final test 6")
         << "Полное восстановление"
         << 13
-        << Expectations{"Полное   вос-", "становление"};
+        << t20;
 
+	Expectations t21;
+	t21.first = "Полное восста-";
+	t21.second = "новление";
     QTest::newRow("Final test 7")
         << "Полное восстановление"
         << 14
-        << Expectations{"Полное восста-", "новление"};
+        << t21;
 
+	Expectations t22;
+	t22.first = "Полное  восста-";
+	t22.second = "новление";
     QTest::newRow("Final test 8")
         << "Полное восстановление"
         << 15
-        << Expectations{"Полное  восста-", "новление"};
+        << t22;
 
+	Expectations t23;
+	t23.first = "Полное   восста-";
+	t23.second = "новление";
     QTest::newRow("Final test 9")
         << "Полное восстановление"
         << 16
-        << Expectations{"Полное   восста-", "новление"};
+        << t23;
 
+	Expectations t24;
+	t24.first = "Полное восстанов-";
+	t24.second = "ление";
     QTest::newRow("Final test 10")
         << "Полное восстановление"
         << 17
-        << Expectations{"Полное восстанов-", "ление"};
+        << t24;
 
+	Expectations t25;
+	t25.first = "Полное  восстанов-";
+	t25.second = "ление";
     QTest::newRow("Final test 11")
         << "Полное восстановление"
         << 18
-        << Expectations{"Полное  восстанов-", "ление"};
+        << t25;
 
+	Expectations t26;
+	t26.first = "Полное восстановле-";
+	t26.second = "ние";
     QTest::newRow("Final test 12")
         << "Полное восстановление"
         << 19
-        << Expectations{"Полное восстановле-", "ние"};
+        << t26;
 
+	Expectations t27;
+	t27.first = "Полное  восстановле-";
+	t27.second = "ние";
     QTest::newRow("Final test 13")
         << "Полное восстановление"
         << 20
-        << Expectations{"Полное  восстановле-", "ние"};
+        << t27;
 
+	Expectations t28;
+	t28.first = "Полное восстановление";
+	t28.second = "";
     QTest::newRow("Final test 14")
         << "Полное восстановление"
         << 21
-        << Expectations{"Полное восстановление", ""};
+        << t28;
 
+	Expectations t29;
+	t29.first = "Не  следует,  однако";
+	t29.second = "забывать, что консультация";
     QTest::newRow("Some additional test")
         << "Не следует, однако забывать, что консультация"
         << 20
-        << Expectations{"Не  следует,  однако", "забывать, что консультация"};
+        << t29;
 }
 
 void TestTextJustifier::testBreakLine()
@@ -364,10 +506,10 @@ void TestTextJustifier::testBreakLine()
     QString after;
 
     breakLine(str, after, textWidth);
-    QString message1 = QString("\nПервая пара\nExpected:\n\"%1\n%2\"\n\nReal:\n\"%3\n%4\"\n")
+    QString message1 = QString("\nПервая пара\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n")
         .arg(expectation.first)
         .arg(str);
-    QString message2 = QString("\nВторая пара\nExpected:\n\"%1\n%2\"\n\nReal:\n\"%3\n%4\"\n")
+    QString message2 = QString("\nВторая пара\nExpected:\n\"%1\"\n\nReal:\n\"%2\"\n")
         .arg(expectation.second)
         .arg(after);
 
