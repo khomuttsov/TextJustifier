@@ -22,6 +22,8 @@ private slots:
 
     void testBreakLine_data();
     void testBreakLine();
+
+	void testExceptions();
 };
 
 #endif // TESTTEXTJUSTIFIER_H

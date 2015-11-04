@@ -516,3 +516,17 @@ void TestTextJustifier::testBreakLine()
     QVERIFY2(str == expectation.first, message1.toLocal8Bit().data());
     QVERIFY2(after == expectation.second, message2.toLocal8Bit().data());
 }
+
+void TestTextJustifier::testExceptions()
+{
+	bool result = false;
+	try
+	{
+		fillSpaces(QString("12345"), 3);
+	}
+	catch (...)
+	{
+		result = true;
+	}
+	QVERIFY(true == result);
+}
