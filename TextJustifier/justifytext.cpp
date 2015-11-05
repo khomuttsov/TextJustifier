@@ -124,7 +124,7 @@ void breakLine(QString& str, QString& after, int textWidth)
         {
             fillSpaces(temp, textWidth);
         }
-        str = temp;
+        str = temp.trimmed();
         return;
     }
 
@@ -139,13 +139,14 @@ void breakLine(QString& str, QString& after, int textWidth)
         {
             after = str.right(str.length() - textWidth).trimmed();
             str.chop(str.length() - textWidth);
+			str = str.trimmed();
             return;
         }
         else
         {
             QString temp = str.left(textWidth);
             after = str.right(str.length() - temp.length());
-            str = temp;
+            str = temp.trimmed();
             return;
         }
     }
@@ -198,6 +199,7 @@ void breakLine(QString& str, QString& after, int textWidth)
             fillSpaces(str, textWidth);
         }
         after = strings[1];
+		str = str.trimmed();
     }
     // В слове нельзя сделать перенос с учетом ограничения на длину.
     // Разделяем строку по границе начала граничного слова.
@@ -209,6 +211,7 @@ void breakLine(QString& str, QString& after, int textWidth)
         {
             fillSpaces(str, textWidth);
         }
+		str = str.trimmed();
     }
 }
 

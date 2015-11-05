@@ -79,7 +79,7 @@ void TestTextJustifier::testJustify_data()
 	l2Expect.push_back("ная   стро-");
 	l2Expect.push_back("ка. Это то-");
 	l2Expect.push_back("же    очень");
-	l2Expect.push_back("длинная    ");
+	l2Expect.push_back("длинная");
 	l2Expect.push_back("строка.");
     QTest::newRow("Two lines, each line is longer than text width")
         << l2
@@ -280,7 +280,7 @@ void TestTextJustifier::testBreakLine_data()
         << t2;
 
 	Expectations t3;
-	t3.first = "При-  ";
+	t3.first = "При-";
 	t3.second = "вет,";
     QTest::newRow("Punctuation mark is after textWidth")
         << "Привет,"
@@ -288,7 +288,7 @@ void TestTextJustifier::testBreakLine_data()
         << t3;
 
 	Expectations t4;
-	t4.first = "Очень   ";
+	t4.first = "Очень";
 	t4.second = "большая строка";
     QTest::newRow("String length is more than text width")
         << "Очень большая строка"
@@ -312,7 +312,7 @@ void TestTextJustifier::testBreakLine_data()
         << t6;
 
 	Expectations t7;
-	t7.first = "Длинная   ";
+	t7.first = "Длинная";
 	t7.second = "строка";
     QTest::newRow("String length is more than text width")
         << "Длинная строка"
@@ -336,7 +336,7 @@ void TestTextJustifier::testBreakLine_data()
         << t9;
 
 	Expectations t10;
-	t10.first = "Длинная   ";
+	t10.first = "Длинная";
 	t10.second = "строка";
     QTest::newRow("It's no possible to break line in the word")
         << "Длинная строка"
@@ -344,7 +344,7 @@ void TestTextJustifier::testBreakLine_data()
         << t10;
 
 	Expectations t11;
-	t11.first = "Длин-  ";
+	t11.first = "Длин-";
 	t11.second = "ная, длинная строка";
     QTest::newRow("Punctuation mark is not fit to text width, but word, which it follows, does")
         << "Длинная, длинная строка"
@@ -352,7 +352,7 @@ void TestTextJustifier::testBreakLine_data()
         << t11;
 
 	Expectations t12;
-	t12.first = "При-  ";
+	t12.first = "При-";
 	t12.second = "бавка";
     QTest::newRow("Word length is longer than text width")
         << "Прибавка"
@@ -368,7 +368,7 @@ void TestTextJustifier::testBreakLine_data()
         << t13;
 
 	Expectations t14;
-	t14.first = "Прибавка ";
+	t14.first = "Прибавка";
 	t14.second = "к пенсии";
     QTest::newRow("Word is on the edge of the text width 2")
         << "Прибавка к пенсии"
@@ -376,7 +376,7 @@ void TestTextJustifier::testBreakLine_data()
         << t14;
 
 	Expectations t15;
-	t15.first = "Полное ";
+	t15.first = "Полное";
 	t15.second = "восстановление";
     QTest::newRow("Final test 1")
         << "Полное восстановление"
@@ -384,7 +384,7 @@ void TestTextJustifier::testBreakLine_data()
         << t15;
 
 	Expectations t16;
-	t16.first = "Полное   ";
+	t16.first = "Полное";
 	t16.second = "восстановление";
     QTest::newRow("Final test 2")
         << "Полное восстановление"
@@ -392,7 +392,7 @@ void TestTextJustifier::testBreakLine_data()
         << t16;
 
 	Expectations t17;
-	t17.first = "Полное    ";
+	t17.first = "Полное";
 	t17.second = "восстановление";
     QTest::newRow("Final test 3")
         << "Полное восстановление"
