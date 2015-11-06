@@ -120,6 +120,7 @@ void breakLine(QString& str, QString& after, int textWidth)
         QString temp = str.left(textWidth - 1);
         after = str.right(str.length() - temp.length());
 
+		temp = temp.trimmed();
         if (temp.length() < textWidth)
         {
             fillSpaces(temp, textWidth);
@@ -140,6 +141,11 @@ void breakLine(QString& str, QString& after, int textWidth)
             after = str.right(str.length() - textWidth).trimmed();
             str.chop(str.length() - textWidth);
 			str = str.trimmed();
+			if (str.length() < textWidth)
+			{
+				fillSpaces(str, textWidth);
+			}
+			str = str.trimmed();
             return;
         }
         else
@@ -147,6 +153,11 @@ void breakLine(QString& str, QString& after, int textWidth)
             QString temp = str.left(textWidth);
             after = str.right(str.length() - temp.length());
             str = temp.trimmed();
+			if (str.length() < textWidth)
+			{
+				fillSpaces(str, textWidth);
+			}
+			str = str.trimmed();
             return;
         }
     }

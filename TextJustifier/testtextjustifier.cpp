@@ -494,6 +494,14 @@ void TestTextJustifier::testBreakLine_data()
         << "Не следует, однако забывать, что консультация"
         << 20
         << t29;
+
+	Expectations t30;
+	t30.first = "Раз  два";
+	t30.second = "три";
+    QTest::newRow("Some additional test")
+        << "Раз два три"
+        << 8
+        << t30;
 }
 
 void TestTextJustifier::testBreakLine()
